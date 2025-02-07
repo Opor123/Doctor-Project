@@ -13,8 +13,11 @@ Which our focus is on the breast cancer. Which we will create this AI for predic
 we going to display the result after input some information using web-base
 
 **Team Member**
+
 Siraphat Nunthasiriphon (Punboon)
+
 Vachiravith Polsungnoen (O'por)
+
 Natthida Thongsiri (Fair)
 
 
