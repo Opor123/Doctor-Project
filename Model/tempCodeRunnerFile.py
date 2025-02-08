@@ -1,0 +1,1 @@
+data['diagnosis'] = data['diagnosis'].map({'M': 1, 'B': 0})

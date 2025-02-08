@@ -11,6 +11,7 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Dropout
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau
+from tensorflow.keras.models import load_model
 
 # Load the dataset
 data = pd.read_csv('data\Breast_cancer.csv')
@@ -63,7 +64,7 @@ reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.5, patience=5)
 # Train the model
 history = model.fit(
     X_train, Y_train,
-    epochs=1000,
+    epochs=300,
     batch_size=32,
     validation_split=0.2,
     callbacks=[early_stop, reduce_lr],
@@ -82,3 +83,5 @@ print(f'AUC-ROC Score: {auc:.2f}')
 loss, accuracy = model.evaluate(X_test, Y_test, verbose=0)
 print(f'Test Loss: {loss * 100:.2f}%')
 print(f'Test Accuracy: {accuracy * 100:.2f}%')
+
+model.save("Cancer_model.h5")
