@@ -5,8 +5,8 @@ import joblib as jb
 from tensorflow.keras.models import load_model
 
 # Load the saved model and scaler
-model = load_model('merge_model.keras')
-scaler = jb.load('scaler_merge.pkl')
+model = load_model('Model\\merge_model.keras')
+scaler = jb.load('Model\scaler_merge.pkl')
 
 # Define a function to preprocess new input data
 def preprocess_input(data, scaler):

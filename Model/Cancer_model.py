@@ -13,6 +13,12 @@ from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau
 import joblib as jb
 import json
+import os 
+
+save='Model'
+
+if not os.path.exists(save):
+    os.makedirs(save)
 
 # Load the dataset
 data = pd.read_csv('data\\Merge_data.csv')
@@ -44,7 +50,8 @@ X_train = scaler.fit_transform(X_train)
 X_test = scaler.transform(X_test)
 
 # Save the scaler
-jb.dump(scaler, 'scaler_merge.pkl')
+scaler_path=os.path.join(save,'scaler_merge.pkl')
+jb.dump(scaler, scaler_path)
 
 # Convert labels to NumPy arrays for compatibility with TensorFlow
 Y_train = np.array(Y_train).astype(int)
@@ -105,7 +112,12 @@ print(f'\nTest Loss: {loss * 100:.2f}%')
 print(f'Test Accuracy: {accuracy * 100:.2f}%')
 print(f'Test AUC: {auc * 100:.2f}%')
 
-# Save the model
-model.save('merge_model.keras')
 
 print("Model and scaler saved successfully!")
+
+
+path=os.path.join(save,'merge_model.keras')
+
+# Save the model
+model.save(path)
+print(f"Model has been saved at: {path}")
