@@ -10,9 +10,9 @@ from sklearn.metrics import classification_report, confusion_matrix, accuracy_sc
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
 # Constants for file paths
-MODEL_PATH = 'Model/Models/Merge/merge_model.keras'
-SCALER_PATH = 'Model/Models/Merge/scaler_merge.pkl'
-TEST_DATA_PATH = "testing/test.csv"
+MODEL_PATH = 'Model/Models/breast_cancer/breast_cancer_model.keras'
+SCALER_PATH = 'Model/Models/breast_cancer/scaler_breast_cancer_model.pkl'
+TEST_DATA_PATH = "testing/testing.csv"
 
 # Load model and scaler
 try:
