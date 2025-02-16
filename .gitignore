@@ -20,3 +20,5 @@ Model/Models/Merge/scaler_merge.pkl
 Model/Models/tumor/feature_names_tumor_model.json
 Model/Models/tumor/scaler_tumor_model.pkl
 Model/scaler_merge.pkl
+
+Model/Models
