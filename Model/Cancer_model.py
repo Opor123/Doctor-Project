@@ -15,7 +15,7 @@ from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau
 
 # Create directory to save model
-save = 'Model'
+save = 'Model/Models/Merge'
 os.makedirs(save, exist_ok=True)
 
 # Load the dataset
