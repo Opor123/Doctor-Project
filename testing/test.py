@@ -12,7 +12,7 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(
 # Constants for file paths
 MODEL_PATH = 'Model/Models/breast_cancer/breast_cancer_model.keras'
 SCALER_PATH = 'Model/Models/breast_cancer/scaler_breast_cancer_model.pkl'
-TEST_DATA_PATH = "testing/testing.csv"
+TEST_DATA_PATH = "testing/modified_dataset.csv"
 
 # Load model and scaler
 try:

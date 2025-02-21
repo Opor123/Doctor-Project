@@ -1,110 +1,97 @@
-# Import necessary libraries
 import pandas as pd
 import numpy as np
-import seaborn as sns
-import matplotlib.pyplot as plt
+import os
+import json
+import joblib as jb
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
+from sklearn.impute import SimpleImputer
 from sklearn.metrics import classification_report, roc_auc_score, confusion_matrix
 from imblearn.over_sampling import SMOTE
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense, Dropout, BatchNormalization
-from tensorflow.keras.optimizers import Adam
-from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau
-import joblib as jb
+from sklearn.ensemble import RandomForestClassifier  # Import Random Forest
 
-# Load the dataset
-data = pd.read_csv('data\\Merge_data.csv')
+# Create directory to save models
+save_dir = 'Model/Models/Random Forrest'
+os.makedirs(save_dir, exist_ok=True)
 
-# Drop unnecessary columns (like 'id' if present)
-if 'id' in data.columns:
-    data = data.drop(columns=['id'])
+def preprocess_and_train(file_path, target_col, model_name):
+    try:
+        # Load the dataset
+        data = pd.read_csv(file_path)
 
-# Encode the target variable
-data['diagnosis'] = data['diagnosis'].map({'M': 1, 'B': 0})
+        # Drop unnecessary columns (more robust)
+        cols_to_drop = ['id', 'Sample code number']
+        data = data.drop(columns=[col for col in cols_to_drop if col in data.columns], errors='ignore')
 
-# Handle missing values
-data.fillna(data.mean(), inplace=True)
+        # Convert target variable to numerical values (handle potential errors)
+        mapping = {'M': 1, 'B': 0, 2: 0, 4: 1}
+        data[target_col] = data[target_col].map(mapping).fillna(-1)  # Map and handle missing values
+        data = data[data[target_col] != -1] # Remove rows with unmapped values
 
-# Separate features and target variable
-X = data.drop(columns=['diagnosis'])
-y = data['diagnosis']
+        # Handle missing values (after mapping target)
+        imputer = SimpleImputer(strategy='median')
+        numerical_cols = data.select_dtypes(include=np.number).columns[:-1] # Impute only numerical features, excluding target
+        data[numerical_cols] = imputer.fit_transform(data[numerical_cols])
 
-# Split the dataset into training and testing sets
-X_train, X_test, Y_train, Y_test = train_test_split(X, y, test_size=0.3, random_state=42, stratify=y)
+        # Separate features and target variable
+        X = data.drop(columns=[target_col])
+        y = data[target_col]
 
-# Standardize the features
-scaler = StandardScaler()
-X_train = scaler.fit_transform(X_train)
-X_test = scaler.transform(X_test)
+        # Save feature names
+        feature_names_path = os.path.join(save_dir, f'feature_names_{model_name}.json')
+        with open(feature_names_path, 'w') as f:
+            json.dump(list(X.columns), f)
 
-# Convert labels to NumPy arrays for compatibility with TensorFlow
-Y_train = np.array(Y_train)
-Y_test = np.array(Y_test)
+        # Split the dataset
+        X_train, X_test, Y_train, Y_test = train_test_split(X, y, test_size=0.3, random_state=42, stratify=y)
 
-# Apply SMOTE to handle class imbalance
-smote = SMOTE(random_state=42)
-X_train, Y_train = smote.fit_resample(X_train, Y_train)
+        # Impute and Scale AFTER splitting (prevent data leakage)
+        X_train[numerical_cols] = imputer.fit_transform(X_train[numerical_cols]) # Impute only numerical features
+        X_test[numerical_cols] = imputer.transform(X_test[numerical_cols]) # Impute only numerical features
 
-# Convert resampled data back to NumPy arrays
-X_train = np.array(X_train)
-Y_train = np.array(Y_train)
+        scaler = StandardScaler()
+        X_train[numerical_cols] = scaler.fit_transform(X_train[numerical_cols]) # Scale only numerical features
+        X_test[numerical_cols] = scaler.transform(X_test[numerical_cols]) # Scale only numerical features
 
-# Define the deep learning model with batch normalization and better dropout
-model = Sequential([
-    Dense(256, input_shape=(X_train.shape[1],), activation='relu'),
-    BatchNormalization(),
-    Dropout(0.3),
+        # Save the scaler
+        scaler_path = os.path.join(save_dir, f'scaler_{model_name}.pkl')
+        jb.dump(scaler, scaler_path)
 
-    Dense(128, activation='relu'),
-    BatchNormalization(),
-    Dropout(0.2),
+        # Apply SMOTE to handle class imbalance (AFTER splitting and scaling)
+        smote = SMOTE(random_state=42)
+        X_train, Y_train = smote.fit_resample(X_train, Y_train)
 
-    Dense(64, activation='relu'),
-    Dropout(0.2),
+        # Create and Train Random Forest Model
+        rf_model = RandomForestClassifier(random_state=42) # Add hyperparameters here if you want to tune them
+        rf_model.fit(X_train, Y_train)
 
-    Dense(1, activation='sigmoid')  # Output layer for binary classification
-])
+        # Make predictions
+        y_pred = rf_model.predict(X_test)
 
-# Compile the model
-optimizer = Adam(learning_rate=0.0001)
-model.compile(optimizer=optimizer, loss='binary_crossentropy', metrics=['accuracy'])
+        # Evaluate the model
+        print(f"\nClassification Report for {model_name}:")
+        print(classification_report(Y_test, y_pred))
 
-# Define callbacks
-early_stop = EarlyStopping(monitor='val_loss', patience=10, restore_best_weights=True, verbose=1)
-reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.5, patience=5, verbose=1)
+        # Compute AUC-ROC Score (using predict_proba)
+        auc = roc_auc_score(Y_test, rf_model.predict_proba(X_test)[:, 1])  # Correct way to get probabilities for AUC
+        print(f'\nAUC-ROC Score for {model_name}: {auc:.4f}')
 
-# Train the model
-history = model.fit(
-    X_train, Y_train,
-    epochs=300,
-    batch_size=32,
-    validation_split=0.2,
-    callbacks=[early_stop, reduce_lr],
-    verbose=1
-)
+        # Compute Confusion Matrix
+        conf_matrix = confusion_matrix(Y_test, y_pred)
+        print(f"\nConfusion Matrix for {model_name}:\n", conf_matrix)
 
-# Make predictions
-y_pred = (model.predict(X_test) > 0.5).astype("int32")
+        # Evaluate (alternative - accuracy only for RF)
+        accuracy = rf_model.score(X_test, Y_test)
+        print(f'Test Accuracy for {model_name}: {accuracy * 100:.2f}%')
 
-# Evaluate the model
-print("\nClassification Report:\n", classification_report(Y_test, y_pred))
+        # Save the model (using joblib)
+        model_path = os.path.join(save_dir, f'{model_name}.pkl')  # Changed file extension to .pkl for joblib
+        jb.dump(rf_model, model_path)
+        print(f"Random Forest model for {model_name} saved at: {model_path}\n")
 
-# Compute AUC-ROC Score
-auc = roc_auc_score(Y_test, model.predict(X_test))
-print(f'\nAUC-ROC Score: {auc:.4f}')
+    except Exception as e:
+        print(f"Error processing {file_path}: {e}")
 
-# Compute Confusion Matrix
-conf_matrix = confusion_matrix(Y_test, y_pred)
-print("\nConfusion Matrix:\n", conf_matrix)
-
-# Evaluate the model on the test set
-loss, accuracy = model.evaluate(X_test, Y_test, verbose=0)
-print(f'\nTest Loss: {loss * 100:.2f}%')
-print(f'Test Accuracy: {accuracy * 100:.2f}%')
-
-# Save the model and scaler
-model.save('merge_model.keras')
-jb.dump(scaler, 'scaler_merge.pkl')
-
-print("\nModel and scaler saved successfully!")
+# Train separate models for Breast Cancer and Tumor datasets
+preprocess_and_train('data/Breast_cancer.csv', 'diagnosis', 'breast_cancer_model')
+preprocess_and_train('data/tumor.csv', 'Class', 'tumor_model')
