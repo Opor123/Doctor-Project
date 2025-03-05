@@ -114,5 +114,5 @@ def preprocess_and_train(file_path, target_col, model_name):
     print(f"Model for {model_name} saved at: {model_path}\n")
 
 # Train separate models for Breast Cancer and Tumor datasets
-preprocess_and_train('data/Breast_cancer.csv', 'diagnosis', 'breast_cancer_model')
-preprocess_and_train('data/tumor.csv', 'Class', 'tumor_model')
+preprocess_and_train('data/Breast_cancer/Breast_cancer.csv', 'diagnosis', 'breast_cancer_model')
+preprocess_and_train('data/Breast_cancer/tumor.csv', 'Class', 'tumor_model')
