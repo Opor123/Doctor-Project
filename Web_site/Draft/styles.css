@@ -1,0 +1,198 @@
+@import url('https://fonts.googleapis.com/css2?family=Aoboshi+One&display=swap');
+
+/* General Styles */
+body {
+    font-family: 'Aoboshi One', serif;
+    margin: 0;
+    padding: 0;
+}
+
+/* 1st Page Styling */
+.icon {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding-top: 20px;
+}
+
+.icon #text {
+    font-weight: 400;
+    font-size: 36px;
+    line-height: 52.13px;
+    color: #26A5FF; /* Hex equivalent */
+    margin-top: 10px;
+}
+
+.icon #icon {
+    width: 196px;
+    height: 196px;
+}
+
+#caption {
+    font-weight: 400;
+    font-size: 20px;
+    line-height: 28.96px;
+    color: #004E86; /* Hex equivalent */
+}
+
+/* Choices Section */
+.choices {
+    padding-top: 100px;
+    text-align: center;
+}
+
+.wrapper {
+    display: flex;
+    justify-content: space-evenly;
+    margin-top: 20px;
+}
+
+/* Choice Containers */
+.choices .container {
+    width: 180px;
+    height: 75px;
+    background-color: #E3F3FF;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 10px 0;
+    border-radius: 10px;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+    transition: transform 0.25s ease-in-out, box-shadow 0.25s ease-in-out;
+}
+
+.choices .container:hover {
+    box-shadow: 4px 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.choices .container:active {
+    transform: scale(0.9);
+}
+
+/* Button Styling */
+.btn {
+    background-color: transparent;
+    border: none;
+    width: 180px;
+    height: 75px;
+    cursor: pointer;
+}
+
+/* 2nd Page Styling */
+.head {
+    font-weight: 400;
+    font-size: 32px;
+    text-align: center;
+    color: #004E86;
+    padding: 20px;
+}
+
+ul {
+    padding: 20px;
+    list-style: none;
+}
+
+ul #caption {
+    padding: 20px;
+}
+
+/* List Items */
+li {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    width: 1034px;
+    height: 75px;
+    background-color: #E3F3FF;
+    gap: 20px;
+    padding: 10px;
+    border-radius: 10px;
+    margin-right: 10px;
+}
+
+/* Checkbox Styling */
+input[type="checkbox"] {
+    transform: scale(1.5);
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #8CCDFC;
+    border-radius: 50%;
+    cursor: pointer;
+    background-color: #8CCDFC;
+    position: relative;
+    margin-left: 20px;
+}
+
+input[type="checkbox"]:checked::before {
+    content: "";
+    background-image: url('https://cdn.jsdelivr.net/npm/heroicons@1.0.6/outline/check.svg');
+    background-size: contain;
+    background-repeat: no-repeat;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 16px;
+    height: 16px;
+}
+
+/* Search Icon */
+.sub-btn {
+    background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"/></svg>');
+    width: 24px;
+    height: 24px;
+    display: inline-block;
+    background-size: cover;
+    border:2px solid #004E86;
+    transition: transform 0.3s ease-in-out;
+    background-color: #004E86;
+    border-radius: 5px;
+    cursor:pointer;
+
+}
+.sub-btn:hover{
+    transform: scale(1.1);
+}
+.sub-btn i{
+    color: white;
+    font-size: 24px;
+}
+/* Submit Button */
+.submit {
+    display: flex;
+    width: 240px;
+    height: 37px;
+    float: right;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Responsive Design */
+@media (max-width: 800px) {
+    .wrapper {
+        justify-content: center;
+        gap: 3vw;
+    }
+
+    .container {
+        width: 45%;
+    }
+}
+
+@media (max-width: 500px) {
+    .wrapper {
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .container {
+        width: 80%;
+    }
+
+    li {
+        width: 95%;
+    }
+}
