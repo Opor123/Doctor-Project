@@ -2,22 +2,38 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="871575e2-87e3-44aa-b5e5-f8e0a2055c7b" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/Web site/Draft/2nd_page.html" beforeDir="false" afterPath="$PROJECT_DIR$/Web site/Draft/2nd_page.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Web site/Draft/styles.css" beforeDir="false" afterPath="$PROJECT_DIR$/Web site/Draft/styles.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Model/Image_recognize/code/COCO.py" beforeDir="false" afterPath="$PROJECT_DIR$/Model/Image_recognize/code/COCO.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Model/Separate_version.py" beforeDir="false" afterPath="$PROJECT_DIR$/Model/Separate_version.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web_site/Draft/1st_page.html" beforeDir="false" afterPath="$PROJECT_DIR$/Web_site/Draft/1st_page.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web_site/Draft/3rd_page.html" beforeDir="false" afterPath="$PROJECT_DIR$/Web_site/Draft/3rd_page.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web_site/Draft/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/Web_site/Draft/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/Breast_cancer/Breast_cancer.csv" beforeDir="false" afterPath="$PROJECT_DIR$/data/Breast_cancer/Breast_cancer.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/testing/test.py" beforeDir="false" afterPath="$PROJECT_DIR$/testing/test.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 1
-}]]></component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 1
+}</component>
   <component name="ProjectId" id="2twYt2p4Dwb3WWw3ZCTNMRph5EY" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;
+  }
+}</component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
