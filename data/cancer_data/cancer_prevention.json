@@ -1,0 +1,98 @@
+[
+    {
+      "category": "Lifestyle Factors",
+      "recommendation": "Maintain a Healthy Weight",
+      "description": "Being overweight or obese, especially after menopause, increases your risk. Regular exercise and a balanced diet are crucial for maintaining a healthy weight.",
+      "actionable": true,
+      "keywords": ["weight", "obesity", "exercise", "diet", "menopause"],
+      "priority": "high"
+    },
+    {
+      "category": "Lifestyle Factors",
+      "recommendation": "Be Physically Active",
+      "description": "Regular exercise can lower your risk. Aim for at least 150 minutes of moderate-intensity or 75 minutes of vigorous-intensity aerobic exercise per week.",
+      "actionable": true,
+      "keywords": ["exercise", "physical activity", "aerobic"],
+      "priority": "high"
+    },
+    {
+      "category": "Lifestyle Factors",
+      "recommendation": "Eat a Healthy Diet",
+      "description": "Focus on a diet rich in fruits, vegetables, and whole grains. Limit processed foods, red meat, and sugary drinks.",
+      "actionable": true,
+      "keywords": ["diet", "fruits", "vegetables", "whole grains", "processed food", "red meat", "sugary drinks"],
+      "priority": "high"
+    },
+    {
+      "category": "Lifestyle Factors",
+      "recommendation": "Limit Alcohol Consumption",
+      "description": "Even small amounts of alcohol can increase your risk. If you drink alcohol, do so in moderation. Ideally, avoiding alcohol is the best option.",
+      "actionable": true,
+      "keywords": ["alcohol", "moderation", "risk"],
+      "priority": "high"
+    },
+    {
+      "category": "Lifestyle Factors",
+      "recommendation": "Don't Smoke",
+      "description": "Smoking is linked to an increased risk of various cancers, including breast cancer.",
+      "actionable": true,
+      "keywords": ["smoking", "cancer", "risk"],
+      "priority": "high"
+    },
+    {
+      "category": "Lifestyle Factors",
+      "recommendation": "Breastfeeding",
+      "description": "If possible, breastfeeding can offer some protective benefits.",
+      "actionable": true,
+      "keywords": ["breastfeeding", "protective benefits"],
+      "priority": "medium"
+    },
+    {
+      "category": "Medical Considerations",
+      "recommendation": "Hormone Therapy",
+      "description": "Limit the use of hormone replacement therapy (HRT) after menopause, as it can increase your risk. Discuss the risks and benefits with your doctor.",
+      "actionable": true,
+      "keywords": ["hormone therapy", "HRT", "menopause", "risk"],
+      "priority": "medium"
+    },
+    {
+      "category": "Medical Considerations",
+      "recommendation": "Screening",
+      "description": "Regular mammograms and clinical breast exams can help detect breast cancer early, when it's most treatable. Talk to your doctor about the appropriate screening schedule for you based on your age and risk factors.",
+      "actionable": true,
+      "keywords": ["screening", "mammogram", "breast exam", "detection", "risk factors"],
+      "priority": "high"
+    },
+    {
+      "category": "Medical Considerations",
+      "recommendation": "Genetic Counseling and Testing",
+      "description": "If you have a strong family history of breast cancer, consider genetic counseling and testing to assess your risk of inherited gene mutations (such as BRCA1 and BRCA2).",
+      "actionable": true,
+      "keywords": ["genetic counseling", "genetic testing", "family history", "BRCA1", "BRCA2", "gene mutations"],
+      "priority": "medium"
+    },
+    {
+      "category": "Medical Considerations",
+      "recommendation": "Preventive Medications or Surgery",
+      "description": "For women at high risk, medications like tamoxifen or raloxifene, or preventive surgery, may be options. Discuss these with your doctor.",
+      "actionable": true,
+      "keywords": ["preventive medications", "tamoxifen", "raloxifene", "preventive surgery", "high risk"],
+      "priority": "medium"
+    },
+    {
+      "category": "Key Recommendations",
+      "recommendation": "Regular Checkups",
+      "description": "Schedule regular checkups with your doctor to discuss your breast health and risk factors.",
+      "actionable": true,
+      "keywords": ["checkups", "doctor", "breast health", "risk factors"],
+      "priority": "high"
+    },
+    {
+      "category": "Key Recommendations",
+      "recommendation": "Know Your Body",
+      "description": "Be aware of any changes in your breasts, such as lumps, skin changes, or nipple discharge, and report them to your doctor immediately.",
+      "actionable": true,
+      "keywords": ["breast changes", "lumps", "skin changes", "nipple discharge", "self-awareness"],
+      "priority": "high"
+    }
+  ]

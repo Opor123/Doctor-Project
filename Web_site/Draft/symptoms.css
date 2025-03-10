@@ -1,0 +1,82 @@
+@import url('https://fonts.googleapis.com/css2?family=Aoboshi+One&display=swap');
+
+body {
+    font-family: 'Aoboshi One', serif;
+    margin: 0;
+    padding: 0;
+}
+
+#caption {
+    font-weight: 400;
+    font-size: 24px;
+    line-height: 28.96px;
+    color: #004E86; /* Hex equivalent */
+}
+
+.head {
+    font-weight: 400;
+    font-size: 32px;
+    text-align: center;
+    color: #004E86;
+    padding: 20px;
+}
+
+#Box{
+    margin-top:95px;
+    text-align: center
+}
+
+#description{
+    font-family: Aoboshi One;
+    font-weight: 400;
+    font-size: 24px;
+    line-height: 100%;
+    letter-spacing: 0%;
+    color: #0095FF;
+}
+
+.percentage{
+    border: 2px solid #DCF0FF;
+    border-radius: 50%;
+    width:160px;
+    height: 160px;
+    text-align: center;
+    left:-82px;
+    top: 252px;
+    background-color: #DCF0FF;
+}
+
+.percentage-container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 64px;
+}
+
+/* Responsive Design */
+@media (max-width: 800px) {
+    .wrapper {
+        justify-content: center;
+        gap: 3vw;
+    }
+
+    .container {
+        width: 45%;
+    }
+}
+
+@media (max-width: 500px) {
+    .wrapper {
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .container {
+        width: 80%;
+    }
+
+    li {
+        width: 95%;
+    }
+}

@@ -43,3 +43,4 @@ document.getElementById('chatBtn').addEventListener('click', async () => {
     const data = await response.json();
     document.getElementById('chatResponse').innerText = data.response;
 });
+

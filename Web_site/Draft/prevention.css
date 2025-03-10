@@ -1,0 +1,34 @@
+@import url('https://fonts.googleapis.com/css2?family=Aoboshi+One&display=swap');
+
+body {
+    font-family: 'Aoboshi One', serif;
+    margin: 0;
+    padding: 0;
+    display: grid; /* Make the body a flex container */
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
+}
+
+.head{
+    color:#004E86;
+    font-size: 32px;
+    text-align: center;
+    
+    width: 100%;
+}
+
+.container{
+    width: 271px;
+    height: 75px;
+    border: 2px solid #E3F3FF;
+    background-color: #E3F3FF;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 43px auto 0;
+}
+
+#caption{
+    color: #0095FF;
+    font-size: 24px;
+}
