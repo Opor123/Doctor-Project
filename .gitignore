@@ -5,3 +5,4 @@ Model/image_recognize/New_image_training
 Web_site/improved_version
 Web_site/draft/api.py
 .venv
+__pycache__
