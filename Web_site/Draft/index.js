@@ -1,23 +1,26 @@
 // 🟢 Text-based diagnosis prediction
 document.querySelector('.sub-btn').addEventListener('click', async () => {
-    const symptoms = {
-        "symptoms": [
-            document.getElementById('symptom1').checked ? 1 : 0,
-            document.getElementById('symptom2').checked ? 1 : 0,
-            document.getElementById('symptom3').checked ? 1 : 0,
-            document.getElementById('symptom4').checked ? 1 : 0
-        ]
+    const selectedSymptoms = [];
+    const checkboxes = document.querySelectorAll('input[name="symptom"]:checked');
+
+    checkboxes.forEach((checkbox) => {
+        selectedSymptoms.push(checkbox.value);
+    });
+
+    const requestData = {
+        age: parseInt(document.getElementById('ageInput').value) || 30,  // Default to 30 if no input
+        symptoms: selectedSymptoms
     };
 
     try {
-        const response = await fetch('http://127.0.0.1:8000/predict-text/', { 
+        const response = await fetch('http://127.0.0.1:8000/predict/', { 
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(symptoms)
+            body: JSON.stringify(requestData)
         });
 
         const data = await response.json();
-        alert(`Diagnosis: ${data.risk_percentage.toFixed(2)}% risk of breast cancer`);
+        alert(`Diagnosis: ${data.prediction.toFixed(2)}% risk of breast cancer`);
     } catch (error) {
         console.error("Error fetching text prediction:", error);
     }
@@ -51,7 +54,7 @@ document.getElementById('chatBtn').addEventListener('click', async () => {
     }
 
     try {
-        const response = await fetch('http://127.0.0.1:8000/chatbot/?user_input=' + encodeURIComponent(message), { 
+        const response = await fetch(`http://127.0.0.1:8000/chatbot/?user_input=${encodeURIComponent(message)}`, { 
             method: 'GET',
             headers: { 'Content-Type': 'application/json' }
         });
@@ -69,5 +72,39 @@ document.getElementById('chatBtn').addEventListener('click', async () => {
 
     } catch (error) {
         console.error("Error fetching chatbot response:", error);
+    }
+});
+
+// 🟢 Form submission for symptom selection
+document.getElementById('symptomForm').addEventListener('submit', function(event) {
+    event.preventDefault();
+
+    const selectedSymptoms = [];
+    const checkboxes = document.querySelectorAll('input[name="symptom"]:checked');
+
+    checkboxes.forEach((checkbox) => {
+        selectedSymptoms.push(checkbox.value);
+    });
+
+    if (selectedSymptoms.length > 0) {
+        fetch('http://127.0.0.1:8000/predict/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                age: parseInt(document.getElementById('ageInput').value) || 30,
+                symptoms: selectedSymptoms
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('result').innerHTML = `Diagnosis: ${data.prediction.toFixed(2)}% risk of breast cancer`;
+        })
+        .catch(error => {
+            document.getElementById('result').innerHTML = 'Error: Unable to process your request.';
+        });
+    } else {
+        document.getElementById('result').innerHTML = 'Please select at least one symptom.';
     }
 });

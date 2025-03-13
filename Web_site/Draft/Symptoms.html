@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor Bobi</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <script src="index.js"></script>
+</head>
+<body>
+
+    <div class="head">Symptoms</div>
+    <div class="container">
+        <div id="caption">How are you feeling today?</div>
+
+        <form id="symptomForm">
+            <label for="age">Enter your age:</label>
+            <input type="number" id="age" name="age" required>
+
+            <ul>
+                <li class="choice">
+                    <input type="checkbox" id="symptom1" name="symptom" value="lumps_or_changes">
+                    <label for="symptom1">Do you have any lumps or changes in your breast or underarm area?</label>
+                </li>
+                <li class="choice">
+                    <input type="checkbox" id="symptom2" name="symptom" value="pain_nipple_discharge">
+                    <label for="symptom2">Have you experienced any pain, nipple discharge, or changes in the appearance of your breast?</label>
+                </li>
+                <li class="choice">
+                    <input type="checkbox" id="symptom3" name="symptom" value="family_history">
+                    <label for="symptom3">Do you have a family history of breast cancer or other cancers?</label>
+                </li>
+                <li class="choice">
+                    <input type="checkbox" id="symptom4" name="symptom" value="medications">
+                    <label for="symptom4">Do you take any medications, including hormone therapy or birth control pills?</label>
+                </li>
+                <li class="choice">
+                    <input type="checkbox" id="symptom5" name="symptom" value="previous_breast_tests">
+                    <label for="symptom5">Have you had previous breast biopsies, mammograms, or other breast imaging?</label>
+                </li>
+            </ul>
+
+            <div class="submit">
+                <button type="submit" class="sub-btn">
+                    <i class="fas fa-search"></i>
+                </button>
+                <div id="caption">Start Examination</div>
+            </div>
+        </form>
+
+        <div id="result"></div>
+    </div>
+    
+
+</body>
+</html>

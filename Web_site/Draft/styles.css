@@ -34,6 +34,8 @@ body {
     font-size: 20px;
     line-height: 28.96px;
     color: #004E86; /* Hex equivalent */
+    justify-content: center;
+    align-items: center;
 }
 
 /* Choices Section */
@@ -91,11 +93,15 @@ body {
 ul {
     padding: 20px;
     list-style: none;
+    display: grid;
+    align-items: center;
+    justify-content: center;
 }
 
 ul #caption {
     padding: 20px;
 }
+
 
 /* List Items */
 li {
@@ -141,8 +147,8 @@ input[type="checkbox"]:checked::before {
 /* Search Icon */
 .sub-btn {
     background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"/></svg>');
-    width: 24px;
-    height: 24px;
+    width: 44px;
+    height: 37px;
     display: inline-block;
     background-size: cover;
     border:2px solid #004E86;
@@ -162,9 +168,25 @@ input[type="checkbox"]:checked::before {
 /* Submit Button */
 .submit {
     display: flex;
+    align-self: center;
+    justify-content: center;
+    align-items: center;
     width: 240px;
     height: 37px;
     float: right;
+}
+
+a{
+    text-decoration: none;
+    color: #004E86;
+}
+
+a:link{
+    color: #004E86;
+}
+
+.container{
+    display:grid;
     justify-content: center;
     align-items: center;
 }

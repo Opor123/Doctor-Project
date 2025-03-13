@@ -108,34 +108,3 @@ model_path = output_dir / "breast_cancer_model.pkl"
 with open(model_path, "wb") as f:
     pickle.dump((model, label_encoders, scaler, y_encoder), f)
 print(f"\nModel saved at: {model_path}")
-
-# Prediction function
-def predict_example(features_dict):
-    input_df = pd.DataFrame([features_dict])
-    for col in ['Age', 'Tumor-Size', 'Inv-Nodes']:
-        if col in input_df:
-            input_df[col] = input_df[col].apply(extract_numeric)
-    for col, le in label_encoders.items():
-        if col in input_df:
-            if input_df[col][0] not in le.classes_:
-                print(f"Warning: '{input_df[col][0]}' is not in training data for '{col}'")
-                input_df[col] = 0
-            else:
-                input_df[col] = le.transform(input_df[col])
-    input_df[numerical_cols] = scaler.transform(input_df[numerical_cols])
-    pred_proba = model.predict_proba(input_df)[0]
-    pred_class = model.predict(input_df)[0]
-    return {
-        'prediction': y_encoder.inverse_transform([pred_class])[0],
-        'probability': {
-            y_encoder.inverse_transform([0])[0]: f"{pred_proba[0]:.4f}",
-            y_encoder.inverse_transform([1])[0]: f"{pred_proba[1]:.4f}"
-        }
-    }
-
-# Example Prediction
-example = {
-    'Age': '40-49', 'Menopause': 'premeno', 'Tumor-Size': '20-24', 'Inv-Nodes': '0-2',
-    'Node-Caps': 'no', 'Deg-Malig': 2, 'Breast': 'left', 'Breast-Quad': 'left_up', 'Irradiat': 'no'
-}
-print("\nExample prediction:", predict_example(example))
