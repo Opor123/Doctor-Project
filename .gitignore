@@ -1,8 +1,8 @@
-Model/Models
 Model/main
 Model/image_recognize/old data
 Model/image_recognize/New_image_training
 Web_site/improved_version
-Web_site/draft/api.py
 .venv
 __pycache__
+.idea
+catboost_info
