@@ -5,7 +5,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Doctor Bobi</title>
     <link rel="stylesheet" href="symptoms.css">
-    <script src="index.js" defer></script>
+    <script defer>
+        document.addEventListener("DOMContentLoaded", function () {
+            const predictionData = localStorage.getItem("predictionResult");
+
+            if (predictionData) {
+                try {
+                    const parsedData = JSON.parse(predictionData);
+
+                    if (parsedData.diagnosis && parsedData.confidence) {
+                        document.getElementById("description").innerText = `Diagnosis: ${parsedData.diagnosis}`;
+                        document.querySelector(".percentage").innerText = `Confidence: ${parsedData.confidence}`;
+                    } else {
+                        console.warn("⚠️ Invalid data structure in localStorage:", parsedData);
+                        document.getElementById("description").innerText = "Diagnosis: Unknown";
+                        document.querySelector(".percentage").innerText = "Confidence: N/A";
+                    }
+                } catch (error) {
+                    console.error("❌ Failed to parse prediction data:", error);
+                    document.getElementById("description").innerText = "Diagnosis: Error";
+                    document.querySelector(".percentage").innerText = "Confidence: Error";
+                }
+            } else {
+                console.warn("⚠️ No prediction data found in localStorage.");
+                document.getElementById("description").innerText = "Diagnosis: Not Available";
+                document.querySelector(".percentage").innerText = "Confidence: Not Available";
+            }
+        });
+    </script>
 </head>
 <body>
     <div class="head">Symptoms</div>
@@ -14,9 +41,7 @@
         <div id="description">Breast Cancer</div>
     </div>
     <div class="percentage-container">
-        <div class="percentage"></div>
+        <div class="percentage">Loading...</div>
     </div>
-    
-    
 </body>
 </html>
