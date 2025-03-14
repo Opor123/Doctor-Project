@@ -9,6 +9,9 @@ from PIL import Image
 from typing import List
 import logging
 import os
+import pickle
+import pandas as pd
+from sklearn.preprocessing import LabelEncoder, StandardScaler
 
 app = FastAPI()
 
@@ -17,7 +20,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("DoctorAI")
 
 # Global variables
-text_model, scalar, limit_model, image_model, responses, feature_names = None, None, None, None, None, None
+text_model, scalar, limit_model, image_model, responses, feature_names, label_encoders, scaler_limit, y_encoder = None, None, None, None, None, None, None, None, None
 
 # Load Models
 def load_med_data_model():
@@ -32,15 +35,20 @@ def load_med_data_model():
         logger.error(f"[ERROR] Failed to load breast cancer model: {e}")
         text_model, scalar, feature_names = None, None, None
 
+
 def load_limit_model():
-    global limit_model
+    global limit_model, label_encoders, scaler_limit, y_encoder
     try:
-        limit_model = jb.load('Model/limit-input/model/output/breast_cancer_model.pkl')
-        # Log model type for debugging
+        with open("Model/limit-input/output/limit_input_model.pkl", "rb") as f:
+            limit_model, label_encoders, scaler_limit, y_encoder = pickle.load(f)
         logger.info(f"[INFO] Limit model type: {type(limit_model).__name__}")
+        logger.info(f"[INFO] Label encoders: {label_encoders}") # add this
+        logger.info(f"[INFO] Scaler limit: {scaler_limit}") # add this
+        logger.info(f"[INFO] Y encoder: {y_encoder}") #add this
     except Exception as e:
         logger.error(f"[ERROR] Failed to load limit model: {e}")
-        limit_model = None
+        limit_model, label_encoders, scaler_limit, y_encoder = None, None, None, None
+
 
 def load_image_model():
     global image_model
@@ -98,75 +106,93 @@ class BreastCancerInput(BaseModel):
     symptoms: List[float]  # Expecting 30 symptoms
 
 class LimitModelInput(BaseModel):
-    age: float
-    symptoms: List[float]  # Example: Expecting 10 symptoms
+    Age: int
+    Menopause: str
+    Tumor_Size: str
+    Inv_Nodes: str
+    Node_Caps: str
+    Deg_Malig: int
+    Breast: str
+    Breast_Quad: str
+    Irradiat: str
 
 # Unified Prediction Endpoint
 @app.post("/predict/")
 async def predict(input_data: dict):
     try:
-        if "age" in input_data and "symptoms" in input_data:
-            # Validate Limit Model Input
-            age = float(input_data["age"])  # Ensure age is float
-            symptoms = [float(s) for s in input_data["symptoms"]]  # Ensure all symptoms are float
-            expected_symptoms = 10  # Define based on your model's training data
+        if all(key in input_data for key in ["Age", "Menopause", "Tumor_Size", "Inv_Nodes", "Node_Caps", "Deg_Malig", "Breast", "Breast_Quad", "Irradiat"]):
+            # Handle underscores to hyphens conversion
+            hyphen_keys = ["Tumor-Size", "Inv-Nodes", "Node-Caps", "Deg-Malig", "Breast-Quad"]
+            underscore_keys = ["Tumor_Size", "Inv_Nodes", "Node_Caps", "Deg_Malig", "Breast_Quad"]
+            
+            df_data = {}
+            for uk, hk in zip(underscore_keys, hyphen_keys):
+                if uk in input_data:
+                    df_data[hk] = input_data[uk]
+                elif hk in input_data:  # In case data is already sent with hyphens
+                    df_data[hk] = input_data[hk]
+            
+            # Add remaining fields
+            for key in ["Age", "Menopause", "Breast", "Irradiat"]:
+                if key in input_data:
+                    df_data[key] = input_data[key]
+            
+            # Create DataFrame
+            df = pd.DataFrame([df_data])
+            
+            logger.info(f"Limit Model Input DataFrame: {df}")
 
-            if not limit_model:
-                raise HTTPException(status_code=503, detail="Limit model not loaded.")
-            
-            if len(symptoms) != expected_symptoms:
-                raise HTTPException(status_code=400, detail=f"Limit model expects {expected_symptoms} symptoms.")
+            # Convert numerical features
+            for col in ['Age', 'Tumor-Size', 'Inv-Nodes']:
+                if col in df.columns:
+                    df[col] = df[col].apply(lambda val: int(val.split('-')[0]) if isinstance(val, str) and '-' in val else int(val))
 
-            # Prepare input - as a flat array first
-            input_array = [age] + symptoms
+            logger.info(f"Limit Model DataFrame after numerical conversion: {df}")
+
+            # Fill missing values
+            df.fillna(df.median(numeric_only=True), inplace=True)
+
+            logger.info(f"Limit Model DataFrame after filling missing values: {df}")
+
+            # Encode categorical features
+            for col, le in label_encoders.items():
+                if col in df.columns:
+                    df[col] = le.transform(df[col])
+
+            logger.info(f"Limit Model DataFrame after encoding categorical features: {df}")
+
+            # Feature Engineering
+            df["Severity_Score"] = df["Tumor-Size"] * df["Deg-Malig"]
+            df["Age_Group"] = pd.cut(df["Age"], bins=[0, 39, 59, 100], labels=["Young", "Middle", "Old"])
+            df["Age_Group"] = LabelEncoder().fit_transform(df["Age_Group"])
+            df["Tumor-Node_Caps"] = df["Tumor-Size"] * (df["Node-Caps"] == 1).astype(int)
+
+            logger.info(f"Limit Model DataFrame after feature engineering: {df}")
+
+            # Standardize numerical features
+            numerical_cols = ['Age', 'Tumor-Size', 'Inv-Nodes', 'Deg-Malig', 'Severity_Score', 'Tumor-Node_Caps']
+            df[numerical_cols] = scaler_limit.transform(df[numerical_cols])
+
+            logger.info(f"Limit Model DataFrame after scaling: {df}")
+
+            # Make prediction
+            prediction_proba = limit_model.predict_proba(df)[:, 1][0]
+            prediction = limit_model.predict(df)[0]
             
-            # Log the input data for debugging
-            logger.info(f"[INFO] Limit model input: {input_array}")
-            
-            # Handle different model types
-            model_type = type(limit_model).__name__
-            logger.info(f"[INFO] Processing with model type: {model_type}")
-            
-            # Create a robust prediction function
-            prediction = 0.0
-            try:
-                # Reshape data appropriately for the model
-                data = np.array(input_array).reshape(1, -1)
+            # Get clear diagnosis from model prediction
+            diagnosis = y_encoder.inverse_transform([prediction])[0]
+            # Ensure diagnosis is clearly "Malignant" or "Benign"
+            if diagnosis.lower() not in ["malignant", "benign"]:
+                diagnosis = "Malignant" if prediction_proba > 0.5 else "Benign"
                 
-                # Different approaches based on common model types
-                if hasattr(limit_model, 'predict_proba'):
-                    # For sklearn classifiers with predict_proba
-                    proba = limit_model.predict_proba(data)
-                    # Handle both binary and multi-class cases
-                    if proba.shape[1] >= 2:
-                        prediction = float(proba[0][1])  # Probability of positive class
-                    else:
-                        prediction = float(proba[0][0])
-                elif hasattr(limit_model, 'predict'):
-                    # For models with only predict method
-                    pred = limit_model.predict(data)
-                    if isinstance(pred, np.ndarray) and pred.size > 0:
-                        prediction = float(pred[0])
-                    else:
-                        prediction = float(pred)
-                else:
-                    # Fallback for unknown model types
-                    prediction = 0.5
-                    logger.warning("[WARNING] Unknown model type, using default prediction value.")
-            except Exception as model_error:
-                logger.error(f"[ERROR] Model prediction failed: {model_error}")
-                # Fallback to ensure API doesn't crash
-                prediction = 0.5
-            
-            # Ensure prediction is normalized to 0-1 range for consistent results
-            prediction = max(0.0, min(1.0, prediction))
-            result = "High Risk" if prediction > 0.5 else "Low Risk"
+            confidence = f"{prediction_proba * 100:.2f}%"
 
             return {
                 "model": "Limit Model",
-                "diagnosis": result, 
-                "confidence": f"{prediction * 100:.2f}%",
-                "raw_prediction": float(prediction)
+                "diagnosis": diagnosis,
+                "is_malignant": diagnosis.lower() == "malignant",
+                "confidence": confidence,
+                "raw_prediction": float(prediction_proba)
             }
 
         elif "symptoms" in input_data:
@@ -185,7 +211,12 @@ async def predict(input_data: dict):
             prediction = text_model.predict(data)[0][0]
             result = "Malignant" if prediction > 0.5 else "Benign"
 
-            return {"model": "Breast Cancer Model", "diagnosis": result, "confidence": f"{float(prediction) * 100:.2f}%"}
+            return {
+                "model": "Breast Cancer Model", 
+                "diagnosis": result, 
+                "is_malignant": result.lower() == "malignant",
+                "confidence": f"{float(prediction) * 100:.2f}%"
+            }
 
         else:
             raise HTTPException(status_code=400, detail="Invalid input format.")
@@ -193,8 +224,8 @@ async def predict(input_data: dict):
     except Exception as e:
         logger.error(f"[ERROR] Prediction failed: {e}")
         raise HTTPException(status_code=500, detail=f"Prediction error: {str(e)}")
-
 # Image Prediction Endpoint
+
 @app.post("/predict-image/")
 async def predict_image(file: UploadFile = File(...)):
     if not image_model:
@@ -214,13 +245,14 @@ async def predict_image(file: UploadFile = File(...)):
         
         return {
             "diagnosis": diagnosis,
+            "is_malignant": diagnosis.lower() == "malignant",
             "confidence": f"{confidence:.2f}%",
             "result_code": int(result)
         }
     except Exception as e:
         logger.error(f"[ERROR] Image prediction failed: {e}")
         raise HTTPException(status_code=500, detail=f"Image processing error: {str(e)}")
-
+    
 # Health Tips Endpoint
 @app.get("/health-tips/")
 def get_health_tips():
