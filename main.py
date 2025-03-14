@@ -10,6 +10,7 @@ from PIL import Image
 from typing import List
 import logging
 import os
+<<<<<<< HEAD
 from fastapi.responses import JSONResponse
 import joblib as jb  # ✅ Use this format
 import joblib
@@ -52,6 +53,11 @@ fixed_model_path = "Model/limit-input/model/output/breast_cancer_model_fixed.pkl
 joblib.dump(actual_model, fixed_model_path)
 
 print(f"✅ Fixed model saved successfully at: {fixed_model_path}")
+=======
+import pickle
+import pandas as pd
+from sklearn.preprocessing import LabelEncoder, StandardScaler
+>>>>>>> 375f4024de710eb5ff90850fd7fb4732b6790cab
 
 app = FastAPI()
 # ✅ Fix: Enable CORS Middleware (Allow OPTIONS for preflight)
@@ -74,7 +80,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("DoctorAI")
 
 # Global variables
-text_model, scalar, limit_model, image_model, responses, feature_names = None, None, None, None, None, None
+text_model, scalar, limit_model, image_model, responses, feature_names, label_encoders, scaler_limit, y_encoder = None, None, None, None, None, None, None, None, None
 
 # Load Models
 def load_med_data_model():
@@ -88,15 +94,30 @@ def load_med_data_model():
     except Exception as e:
         logger.error(f"[ERROR] Failed to load breast cancer model: {e}")
         text_model, scalar, feature_names = None, None, None
+<<<<<<< HEAD
         
+=======
+
+
+>>>>>>> 375f4024de710eb5ff90850fd7fb4732b6790cab
 def load_limit_model():
-    global limit_model
+    global limit_model, label_encoders, scaler_limit, y_encoder
     try:
+<<<<<<< HEAD
         limit_model = jb.load("Model/limit-input/model/output/breast_cancer_model_fixed.pkl")
         logger.info(f"[INFO] Limit model loaded successfully: {type(limit_model).__name__}")
+=======
+        with open("Model/limit-input/output/limit_input_model.pkl", "rb") as f:
+            limit_model, label_encoders, scaler_limit, y_encoder = pickle.load(f)
+        logger.info(f"[INFO] Limit model type: {type(limit_model).__name__}")
+        logger.info(f"[INFO] Label encoders: {label_encoders}") # add this
+        logger.info(f"[INFO] Scaler limit: {scaler_limit}") # add this
+        logger.info(f"[INFO] Y encoder: {y_encoder}") #add this
+>>>>>>> 375f4024de710eb5ff90850fd7fb4732b6790cab
     except Exception as e:
         logger.error(f"[ERROR] Failed to load limit model: {e}")
-        limit_model = None
+        limit_model, label_encoders, scaler_limit, y_encoder = None, None, None, None
+
 
    
 
@@ -183,14 +204,22 @@ class BreastCancerInput(BaseModel):
     symptoms: List[float]  # Expecting 30 symptoms
 
 class LimitModelInput(BaseModel):
-    age: float
-    symptoms: List[float]  # Example: Expecting 10 symptoms
+    Age: int
+    Menopause: str
+    Tumor_Size: str
+    Inv_Nodes: str
+    Node_Caps: str
+    Deg_Malig: int
+    Breast: str
+    Breast_Quad: str
+    Irradiat: str
 
 
 
 @app.post("/predict/")
 async def predict(input_data: dict):
     try:
+<<<<<<< HEAD
         if "age" in input_data and "symptoms" in input_data:
             age = float(input_data["age"])  # Keep age as a number
             symptoms = [float(s) for s in input_data["symptoms"]]
@@ -232,14 +261,146 @@ async def predict(input_data: dict):
                 "raw_prediction": prediction
             }
 
+=======
+        if all(key in input_data for key in ["Age", "Menopause", "Tumor_Size", "Inv_Nodes", "Node_Caps", "Deg_Malig", "Breast", "Breast_Quad", "Irradiat"]):
+            # Handle underscores to hyphens conversion
+            hyphen_keys = ["Tumor-Size", "Inv-Nodes", "Node-Caps", "Deg-Malig", "Breast-Quad"]
+            underscore_keys = ["Tumor_Size", "Inv_Nodes", "Node_Caps", "Deg_Malig", "Breast_Quad"]
+            
+            df_data = {}
+            for uk, hk in zip(underscore_keys, hyphen_keys):
+                if uk in input_data:
+                    df_data[hk] = input_data[uk]
+                elif hk in input_data:  # In case data is already sent with hyphens
+                    df_data[hk] = input_data[hk]
+            
+            # Add remaining fields
+            for key in ["Age", "Menopause", "Breast", "Irradiat"]:
+                if key in input_data:
+                    df_data[key] = input_data[key]
+            
+            # Create DataFrame
+            df = pd.DataFrame([df_data])
+            
+            logger.info(f"Limit Model Input DataFrame: {df}")
+
+            # Convert numerical features
+            for col in ['Age', 'Tumor-Size', 'Inv-Nodes']:
+                if col in df.columns:
+                    df[col] = df[col].apply(lambda val: int(val.split('-')[0]) if isinstance(val, str) and '-' in val else int(val))
+
+            logger.info(f"Limit Model DataFrame after numerical conversion: {df}")
+
+            # Fill missing values
+            df.fillna(df.median(numeric_only=True), inplace=True)
+
+            logger.info(f"Limit Model DataFrame after filling missing values: {df}")
+
+            # Encode categorical features
+            for col, le in label_encoders.items():
+                if col in df.columns:
+                    df[col] = le.transform(df[col])
+
+            logger.info(f"Limit Model DataFrame after encoding categorical features: {df}")
+
+            # Feature Engineering
+            df["Severity_Score"] = df["Tumor-Size"] * df["Deg-Malig"]
+            df["Age_Group"] = pd.cut(df["Age"], bins=[0, 39, 59, 100], labels=["Young", "Middle", "Old"])
+            df["Age_Group"] = LabelEncoder().fit_transform(df["Age_Group"])
+            df["Tumor-Node_Caps"] = df["Tumor-Size"] * (df["Node-Caps"] == 1).astype(int)
+
+            logger.info(f"Limit Model DataFrame after feature engineering: {df}")
+
+            # Standardize numerical features
+            numerical_cols = ['Age', 'Tumor-Size', 'Inv-Nodes', 'Deg-Malig', 'Severity_Score', 'Tumor-Node_Caps']
+            df[numerical_cols] = scaler_limit.transform(df[numerical_cols])
+
+            logger.info(f"Limit Model DataFrame after scaling: {df}")
+
+            # Make prediction
+            prediction_proba = limit_model.predict_proba(df)[:, 1][0]
+            prediction = limit_model.predict(df)[0]
+            
+            # Get clear diagnosis from model prediction
+            diagnosis = y_encoder.inverse_transform([prediction])[0]
+            # Ensure diagnosis is clearly "Malignant" or "Benign"
+            if diagnosis.lower() not in ["malignant", "benign"]:
+                diagnosis = "Malignant" if prediction_proba > 0.5 else "Benign"
+                
+            confidence = f"{prediction_proba * 100:.2f}%"
+
+            return {
+                "model": "Limit Model",
+                "diagnosis": diagnosis,
+                "is_malignant": diagnosis.lower() == "malignant",
+                "confidence": confidence,
+                "raw_prediction": float(prediction_proba)
+            }
+
+        elif "symptoms" in input_data:
+            # Validate Breast Cancer Model Input
+            symptoms = [float(s) for s in input_data["symptoms"]]  # Ensure all symptoms are float
+            expected_symptoms = 30  # Define based on your model's training data
+
+            if not text_model or not scalar:
+                raise HTTPException(status_code=503, detail="Breast cancer model not loaded.")
+            if len(symptoms) != expected_symptoms:
+                raise HTTPException(status_code=400, detail=f"Breast cancer model expects {expected_symptoms} symptoms.")
+
+            # Prepare input
+            data = np.array(symptoms).reshape(1, -1)
+            data = scalar.transform(data)
+            prediction = text_model.predict(data)[0][0]
+            result = "Malignant" if prediction > 0.5 else "Benign"
+
+            return {
+                "model": "Breast Cancer Model", 
+                "diagnosis": result, 
+                "is_malignant": result.lower() == "malignant",
+                "confidence": f"{float(prediction) * 100:.2f}%"
+            }
+
+>>>>>>> 375f4024de710eb5ff90850fd7fb4732b6790cab
         else:
             raise HTTPException(status_code=400, detail="Invalid input format.")
     except Exception as e:
         logger.error(f"[ERROR] Prediction failed: {e}")
         raise HTTPException(status_code=500, detail=f"Prediction error: {str(e)}")
+<<<<<<< HEAD
 
 
 
+=======
+# Image Prediction Endpoint
+
+@app.post("/predict-image/")
+async def predict_image(file: UploadFile = File(...)):
+    if not image_model:
+        raise HTTPException(status_code=503, detail="Image model not loaded.")
+    
+    try:
+        image_data = await file.read()
+        image = Image.open(io.BytesIO(image_data)).convert('RGB').resize((640, 640))
+        image = np.array(image) / 255.0
+        image = np.expand_dims(image, axis=0)
+        
+        prediction = image_model.predict(image)
+        result = np.argmax(prediction, axis=1)[0]
+        confidence = float(prediction[0][result]) * 100
+        
+        diagnosis = "Malignant" if result == 1 else "Benign"
+        
+        return {
+            "diagnosis": diagnosis,
+            "is_malignant": diagnosis.lower() == "malignant",
+            "confidence": f"{confidence:.2f}%",
+            "result_code": int(result)
+        }
+    except Exception as e:
+        logger.error(f"[ERROR] Image prediction failed: {e}")
+        raise HTTPException(status_code=500, detail=f"Image processing error: {str(e)}")
+    
+>>>>>>> 375f4024de710eb5ff90850fd7fb4732b6790cab
 # Health Tips Endpoint
 @app.get("/health-tips/")
 def get_health_tips():

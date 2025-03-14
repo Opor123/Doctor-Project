@@ -6,6 +6,8 @@ from PIL import Image
 import io
 import random
 import numpy as np
+import pandas as pd
+from sklearn.preprocessing import LabelEncoder
 
 # Configuration
 BASE_URL = "http://127.0.0.1:8000"
@@ -46,51 +48,41 @@ def generate_breast_cancer_data():
         "symmetry_worst": round(random.uniform(0.1, 0.5), 4),
         "fractal_dimension_worst": round(random.uniform(0.05, 0.2), 4)
     }
-    
+
     # For API compatibility, put the values into a "symptoms" array
     symptoms = list(sample.values())
-    
+
     return {"symptoms": symptoms}, sample
 
 
 def generate_limit_model_data():
-    """Generate realistic data for the limit model"""
+    """Generate realistic data for the breast cancer dataset with specified columns"""
+
+    # Define possible values for categorical features
+    menopause_values = ["lt40", "ge40", "premeno"]
+    tumor_size_values = ["0-4", "5-9", "10-14", "15-19", "20-24", "25-29", "30-34", "35-39", "40-44", "45-49", "50-54"]
+    inv_nodes_values = ["0-2", "3-5", "6-8", "9-11", "12-14", "15-17", "18-20", "21-23", "24-26", "27-29", "30-32", "33-35", "36-39"]
+    node_caps_values = ["yes", "no"]
+    deg_malig_values = [1, 2, 3]
+    breast_values = ["left", "right"]
+    breast_quad_values = ["left_up", "left_low", "right_up", "right_low", "central"]
+    irradiat_values = ["yes", "no"]
+
+    # Generate sample with appropriate values for each column
+    # Use underscores instead of hyphens to match the API's expected input format
     sample = {
-        "age": random.randint(18, 85),
-        "temperature": round(random.uniform(35.5, 40.2), 1),
-        "heart_rate": random.randint(50, 120),
-        "respiratory_rate": random.randint(12, 30),
-        "systolic_bp": random.randint(90, 180),
-        "diastolic_bp": random.randint(60, 110),
-        "oxygen_saturation": random.randint(85, 100),
-        "white_blood_cell_count": round(random.uniform(3.5, 15.0), 1),
-        "pain_level": random.randint(0, 10),
-        "days_since_symptom_onset": random.randint(0, 14)
+        "Age": random.randint(20, 90),
+        "Menopause": random.choice(menopause_values),
+        "Tumor_Size": random.choice(tumor_size_values),  # Changed from Tumor-Size
+        "Inv_Nodes": random.choice(inv_nodes_values),    # Changed from Inv-Nodes
+        "Node_Caps": random.choice(node_caps_values),    # Changed from Node-Caps
+        "Deg_Malig": random.choice(deg_malig_values),
+        "Breast": random.choice(breast_values),
+        "Breast_Quad": random.choice(breast_quad_values), # Changed from Breast-Quad
+        "Irradiat": random.choice(irradiat_values)
     }
-    
-    # For API compatibility
-    api_sample = {
-        "age": sample["age"],
-        "symptoms": [
-            sample["temperature"]/40,        # Normalize temperature 
-            sample["heart_rate"]/120,        # Normalize heart rate
-            sample["respiratory_rate"]/30,   # Normalize respiratory rate
-            sample["systolic_bp"]/180,       # Normalize systolic BP
-            sample["diastolic_bp"]/110,      # Normalize diastolic BP
-            sample["oxygen_saturation"]/100, # Normalize O2 saturation
-            sample["white_blood_cell_count"]/15.0, # Normalize WBC
-            sample["pain_level"]/10,         # Normalize pain level
-            sample["days_since_symptom_onset"]/14, # Normalize days of symptoms
-            random.uniform(0, 1)             # Random additional symptom
-        ]
-    }
-    
-    # Round the normalized symptoms to 2 decimal places
-    api_sample["symptoms"] = [round(s, 2) for s in api_sample["symptoms"]]
-    
-    return api_sample, sample
 
-
+    return sample
 
 def test_home():
     """Test the home endpoint"""
@@ -122,14 +114,14 @@ def test_predict_breast_cancer():
 
         print(f"Sending breast cancer prediction request with payload:")
         print(json.dumps(test_input, indent=2))
-        
+
         response = requests.post(f"{BASE_URL}/predict/", json=test_input, timeout=TIMEOUT)
 
         print(f"Breast Cancer Model Prediction (Status {response.status_code}):", end=" ")
         if response.status_code == 200:
             result = response.json()
             print(result)
-            
+
             # Display the prediction result with the original input data
             print("\nOriginal Input Data:")
             print(json.dumps(original_data, indent=2))
@@ -148,21 +140,19 @@ def test_predict_limit_model():
     """Test the limit model prediction endpoint with realistic data"""
     try:
         # Generate realistic test data
-        test_input, original_data = generate_limit_model_data()
+        test_input = generate_limit_model_data()  # Returns a single dictionary
 
         print(f"Sending limit model prediction request with payload:")
         print(json.dumps(test_input, indent=2))
-        
+
+        # Send the dictionary directly (no list)
         response = requests.post(f"{BASE_URL}/predict/", json=test_input, timeout=TIMEOUT)
 
         print(f"Limit Model Prediction (Status {response.status_code}):", end=" ")
         if response.status_code == 200:
             result = response.json()
             print(result)
-            
-            # Display the prediction result with the original input data
-            print("\nOriginal Input Data:")
-            print(json.dumps(original_data, indent=2))
+
             print("\nPrediction Result:")
             print(json.dumps(result, indent=2))
             return True
@@ -173,12 +163,13 @@ def test_predict_limit_model():
         print(f"❌ Limit Model Prediction Test Failed: {e}")
         return False
 
+
 def test_image_prediction():
     """Test the image prediction endpoint with a synthetic image if no real image is available"""
     try:
         # Try to find an existing image first
         image_paths = [
-            "Model/Image_recognize/New_image_training/test/mdb001lm_jpg.rf.90c8a765bfb849b80fdfcb7cbd3f67c9.jpg",
+            "Model/Image_recognize/old data/Split_dataset/test/normal/malignant (5).png",
             "Model/Image_recognize/New_image_training/test/mdb012rl_jpg.rf.e29872d0a71d05157a9a6e438269ab5f.jpg",
             "Model/Image_recognize/New_image_training/test/mdb032rl_jpg.rf.078c97741875c9b0e30ce3c26c903439.jpg"
         ]
@@ -228,10 +219,32 @@ def test_image_prediction():
         print(f"Image Prediction (Status {response.status_code}):", end=" ")
         if response.status_code == 200:
             result = response.json()
-            print(result)
-            
-            # Display the prediction result
-            print("Result:", result)
+
+            # Display the detailed prediction result in a formatted way
+            print("\n\nImage Prediction Results:")
+            print("=" * 40)
+            print(f"Diagnosis: {result.get('diagnosis', 'N/A')}")
+            print(f"Confidence: {result.get('confidence', 'N/A')}")
+            print(f"Result Code: {result.get('result_code', 'N/A')}")
+
+            # Map result code to a human-readable meaning if possible
+            result_code = result.get('result_code')
+            if result_code is not None:
+                result_meaning = {
+                    0: "Benign",
+                    1: "Malignant"
+                }.get(result_code, "Unknown")
+                print(f"Result Meaning: {result_meaning}")
+
+            # Display any additional information that might be in the result
+            additional_keys = [key for key in result.keys() if key not in ['diagnosis', 'confidence', 'result_code']]
+            if additional_keys:
+                print("\nAdditional Information:")
+                for key in additional_keys:
+                    print(f"{key}: {result[key]}")
+
+            print("=" * 40)
+
             return True
         else:
             print(f"Error: {response.text}")
