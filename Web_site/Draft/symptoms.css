@@ -1,82 +1,185 @@
-@import url('https://fonts.googleapis.com/css2?family=Aoboshi+One&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Aoboshi+One:wght@400;500;600&display=swap');
 
-body {
-    font-family: 'Aoboshi One', serif;
-    margin: 0;
-    padding: 0;
+:root {
+  /* Color variables */
+  --primary-blue: #004E86;
+  --primary-light-blue: #0095FF;
+  --background-blue: #DCF0FF;
+  
+  /* Typography */
+  --font-family: 'Aoboshi One', serif;
+  
+  /* Spacing */
+  --spacing-md: 20px;
+  --spacing-lg: 64px;
+  --spacing-xl: 95px;
+  
+  /* Border radius */
+  --border-radius-circle: 50%;
 }
 
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-family);
+  color: var(--primary-blue);
+  min-height: 100vh;
+  background-color: white;
+}
+
+/* Typography */
 #caption {
-    font-weight: 400;
-    font-size: 24px;
-    line-height: 28.96px;
-    color: #004E86; /* Hex equivalent */
+  font-weight: 400;
+  font-size: 1.5rem;
+  line-height: 1.2;
+  color: var(--primary-blue);
+  max-width: 800px;
+  margin: 0 auto;
 }
 
 .head {
-    font-weight: 400;
-    font-size: 32px;
-    text-align: center;
-    color: #004E86;
-    padding: 20px;
+  font-weight: 400;
+  font-size: 2rem;
+  text-align: center;
+  color: var(--primary-blue);
+  padding: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
 }
 
-#Box{
-    margin-top:95px;
-    text-align: center
+#description {
+  font-weight: 400;
+  font-size: 1.5rem;
+  line-height: 1;
+  color: var(--primary-light-blue);
+  margin-bottom: var(--spacing-md);
 }
 
-#description{
-    font-family: Aoboshi One;
-    font-weight: 400;
-    font-size: 24px;
-    line-height: 100%;
-    letter-spacing: 0%;
-    color: #0095FF;
+/* Layout */
+#Box {
+  margin-top: var(--spacing-xl);
+  text-align: center;
+  padding: 0 var(--spacing-md);
 }
 
-.percentage{
-    border: 2px solid #DCF0FF;
-    border-radius: 50%;
-    width:160px;
-    height: 160px;
-    text-align: center;
-    left:-82px;
-    top: 252px;
-    background-color: #DCF0FF;
+.percentage-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: var(--spacing-lg);
+  gap: var(--spacing-md);
+  flex-wrap: wrap;
 }
 
-.percentage-container{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-top: 64px;
+.percentage {
+  border: 2px solid var(--background-blue);
+  border-radius: var(--border-radius-circle);
+  width: 160px;
+  height: 160px;
+  background-color: var(--background-blue);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.percentage:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 78, 134, 0.1);
+}
+
+.percentage-value {
+  font-size: 2.5rem;
+  font-weight: 500;
+  color: var(--primary-blue);
+}
+
+.percentage-label {
+  font-size: 1rem;
+  color: var(--primary-light-blue);
+  margin-top: 5px;
+}
+
+/* Container */
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--spacing-md);
+}
+
+/* Animation */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in {
+  animation: fadeIn 0.5s ease forwards;
 }
 
 /* Responsive Design */
 @media (max-width: 800px) {
-    .wrapper {
-        justify-content: center;
-        gap: 3vw;
-    }
+  .wrapper {
+    justify-content: center;
+    gap: 3vw;
+  }
 
-    .container {
-        width: 45%;
-    }
+  .container {
+    width: 45%;
+  }
+  
+  .head {
+    font-size: 1.75rem;
+  }
+  
+  #caption, #description {
+    font-size: 1.25rem;
+  }
+  
+  #Box {
+    margin-top: 60px;
+  }
+  
+  .percentage-container {
+    margin-top: 40px;
+  }
 }
 
 @media (max-width: 500px) {
-    .wrapper {
-        flex-direction: column;
-        align-items: center;
-        gap: 15px;
-    }
+  .wrapper {
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+  }
 
-    .container {
-        width: 80%;
-    }
+  .container {
+    width: 80%;
+  }
 
-    li {
-        width: 95%;
-    }
+  li {
+    width: 95%;
+  }
+  
+  .percentage {
+    width: 140px;
+    height: 140px;
+  }
+  
+  .percentage-value {
+    font-size: 2rem;
+  }
+  
+  .head {
+    font-size: 1.5rem;
+    padding: 15px;
+  }
+  
+  #caption, #description {
+    font-size: 1.125rem;
+  }
 }

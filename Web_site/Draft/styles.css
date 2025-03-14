@@ -1,220 +1,379 @@
-@import url('https://fonts.googleapis.com/css2?family=Aoboshi+One&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Aoboshi+One:wght@400;500;600&display=swap');
 
-/* General Styles */
+/* CSS Reset and Base Styles */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  /* Color variables */
+  --primary-color: #26A5FF;
+  --primary-dark: #004E86;
+  --primary-light: #E3F3FF;
+  --primary-mid: #8CCDFC;
+  --shadow-light: rgba(0, 0, 0, 0.1);
+  --shadow-medium: rgba(0, 0, 0, 0.2);
+  
+  /* Spacing variables */
+  --spacing-xs: 10px;
+  --spacing-sm: 20px;
+  --spacing-md: 40px;
+  --spacing-lg: 100px;
+  
+  /* Border radius */
+  --radius-default: 10px;
+  
+  /* Transition */
+  --transition-default: all 0.25s ease-in-out;
+}
+
 body {
-    font-family: 'Aoboshi One', serif;
-    margin: 0;
-    padding: 0;
+  font-family: 'Aoboshi One', serif;
+  line-height: 1.5;
+  color: var(--primary-dark);
+  background-color: #FFFFFF;
+  min-height: 100vh;
+}
+
+/* Common Components */
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--spacing-sm);
+}
+
+.btn {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  transition: var(--transition-default);
+}
+
+.btn:focus {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
 }
 
 /* 1st Page Styling */
 .icon {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    padding-top: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding-top: var(--spacing-sm);
 }
 
 .icon #text {
-    font-weight: 400;
-    font-size: 36px;
-    line-height: 52.13px;
-    color: #26A5FF; /* Hex equivalent */
-    margin-top: 10px;
+  font-weight: 400;
+  font-size: 2.25rem;
+  line-height: 1.45;
+  color: var(--primary-color);
+  margin-top: var(--spacing-xs);
 }
 
 .icon #icon {
-    width: 196px;
-    height: 196px;
+  width: 196px;
+  height: 196px;
+  object-fit: contain;
 }
 
 #caption {
-    font-weight: 400;
-    font-size: 20px;
-    line-height: 28.96px;
-    color: #004E86; /* Hex equivalent */
-    justify-content: center;
-    align-items: center;
+  font-weight: 400;
+  font-size: 1.25rem;
+  line-height: 1.45;
+  color: var(--primary-dark);
+  text-align: center;
+  margin: var(--spacing-sm) 0;
 }
 
 /* Choices Section */
 .choices {
-    padding-top: 100px;
-    text-align: center;
+  padding-top: var(--spacing-lg);
+  text-align: center;
 }
 
 .wrapper {
-    display: flex;
-    justify-content: space-evenly;
-    margin-top: 20px;
+  display: flex;
+  justify-content: space-evenly;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-sm);
 }
 
 /* Choice Containers */
 .choices .container {
-    width: 180px;
-    height: 75px;
-    background-color: #E3F3FF;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 10px 0;
-    border-radius: 10px;
-    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
-    transition: transform 0.25s ease-in-out, box-shadow 0.25s ease-in-out;
+  width: 180px;
+  height: 75px;
+  background-color: var(--primary-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-default);
+  box-shadow: 2px 2px 10px var(--shadow-light);
+  transition: var(--transition-default);
 }
 
 .choices .container:hover {
-    box-shadow: 4px 4px 15px rgba(0, 0, 0, 0.2);
+  box-shadow: 4px 4px 15px var(--shadow-medium);
+  transform: translateY(-2px);
 }
 
 .choices .container:active {
-    transform: scale(0.9);
+  transform: scale(0.95);
 }
 
-/* Button Styling */
-.btn {
-    background-color: transparent;
-    border: none;
-    width: 180px;
-    height: 75px;
-    cursor: pointer;
+/* Choice Buttons */
+.choices .btn {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Aoboshi One', serif;
+  font-size: 1rem;
+  color: var(--primary-dark);
 }
 
 /* 2nd Page Styling */
 .head {
-    font-weight: 400;
-    font-size: 32px;
-    text-align: center;
-    color: #004E86;
-    padding: 20px;
+  font-weight: 500;
+  font-size: 2rem;
+  text-align: center;
+  color: var(--primary-dark);
+  padding: var(--spacing-sm);
+  margin-bottom: var(--spacing-sm);
 }
 
 ul {
-    padding: 20px;
-    list-style: none;
-    display: grid;
-    align-items: center;
-    justify-content: center;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  max-width: 1034px;
+  margin: 0 auto;
 }
-
-ul #caption {
-    padding: 20px;
-}
-
 
 /* List Items */
 li {
-    display: flex;
-    align-items: center;
-    margin-bottom: 10px;
-    width: 1034px;
-    height: 75px;
-    background-color: #E3F3FF;
-    gap: 20px;
-    padding: 10px;
-    border-radius: 10px;
-    margin-right: 10px;
+  display: flex;
+  align-items: center;
+  background-color: var(--primary-light);
+  padding: var(--spacing-xs);
+  border-radius: var(--radius-default);
+  transition: var(--transition-default);
+}
+
+li:hover {
+  box-shadow: 2px 2px 10px var(--shadow-light);
 }
 
 /* Checkbox Styling */
 input[type="checkbox"] {
-    transform: scale(1.5);
-    appearance: none;
-    width: 20px;
-    height: 20px;
-    border: 2px solid #8CCDFC;
-    border-radius: 50%;
-    cursor: pointer;
-    background-color: #8CCDFC;
-    position: relative;
-    margin-left: 20px;
+  appearance: none;
+  -webkit-appearance: none;
+  width: 24px;
+  height: 24px;
+  border: 2px solid var(--primary-mid);
+  border-radius: 50%;
+  cursor: pointer;
+  background-color: var(--primary-mid);
+  position: relative;
+  margin: 0 var(--spacing-sm);
+  transition: var(--transition-default);
+}
+
+input[type="checkbox"]:checked {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
 }
 
 input[type="checkbox"]:checked::before {
-    content: "";
-    background-image: url('https://cdn.jsdelivr.net/npm/heroicons@1.0.6/outline/check.svg');
-    background-size: contain;
-    background-repeat: no-repeat;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 16px;
-    height: 16px;
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(45deg);
+  width: 6px;
+  height: 12px;
+  border-right: 2px solid white;
+  border-bottom: 2px solid white;
 }
 
-/* Search Icon */
+input[type="checkbox"]:focus {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+/* Search Button */
 .sub-btn {
-    background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"/></svg>');
-    width: 44px;
-    height: 37px;
-    display: inline-block;
-    background-size: cover;
-    border:2px solid #004E86;
-    transition: transform 0.3s ease-in-out;
-    background-color: #004E86;
-    border-radius: 5px;
-    cursor:pointer;
+  width: 44px;
+  height: 37px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--primary-dark);
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: var(--transition-default);
+  text-align: center;
+}
 
+.sub-btn:hover {
+  transform: scale(1.05);
+  background-color: var(--primary-color);
 }
-.sub-btn:hover{
-    transform: scale(1.1);
+
+.sub-btn i {
+  color: white;
+  font-size: 24px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
 }
-.sub-btn i{
-    color: white;
-    font-size: 24px;
+
+
+
+/* SVG for search icon (no need for external URL) */
+.sub-btn::before {
+  content: '';
+  display: block;
+  width: 24px;
+  height: 24px;
+  background-size: contain;
+  background-repeat: no-repeat;
 }
+
 /* Submit Button */
 .submit {
-    display: flex;
-    align-self: center;
-    justify-content: center;
-    align-items: center;
-    width: 240px;
-    height: 37px;
-    float: right;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: var(--spacing-md) auto;
+  width: 240px;
+  height: 40px;
+  float: right;
+  width: 240px;
+  height: 37px;
 }
 
-a{
-    text-decoration: none;
-    color: #004E86;
+.submit-btn {
+  width: 100%;
+  height: 100%;
+  background-color: var(--primary-dark);
+  color: white;
+  border: none;
+  border-radius: var(--radius-default);
+  font-family: 'Aoboshi One', serif;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: var(--transition-default);
 }
 
-a:link{
-    color: #004E86;
+.submit-btn:hover {
+  background-color: var(--primary-color);
+  transform: translateY(-2px);
 }
 
-.container{
-    display:grid;
-    justify-content: center;
-    align-items: center;
+/* Links */
+a {
+  text-decoration: none;
+  color: var(--primary-dark);
+  transition: var(--transition-default);
+}
+
+a:hover {
+  color: var(--primary-color);
+}
+
+/* Additional Layout */
+.page-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.main-content {
+  flex: 1;
+}
+
+/* Animation */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in {
+  animation: fadeIn 0.5s ease forwards;
 }
 
 /* Responsive Design */
-@media (max-width: 800px) {
-    .wrapper {
-        justify-content: center;
-        gap: 3vw;
-    }
+@media (max-width: 1100px) {
+  ul {
+    width: 90%;
+  }
+  
+  li {
+    width: 100%;
+  }
+}
 
-    .container {
-        width: 45%;
-    }
+@media (max-width: 800px) {
+  .wrapper {
+    justify-content: center;
+    gap: 4vw;
+  }
+
+  .choices .container {
+    width: 45%;
+    max-width: 180px;
+  }
+  
+  .icon #text {
+    font-size: 1.75rem;
+  }
+  
+  .head {
+    font-size: 1.75rem;
+  }
 }
 
 @media (max-width: 500px) {
-    .wrapper {
-        flex-direction: column;
-        align-items: center;
-        gap: 15px;
-    }
+  :root {
+    --spacing-lg: 60px;
+  }
+  
+  .wrapper {
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+  }
 
-    .container {
-        width: 80%;
-    }
-
-    li {
-        width: 95%;
-    }
+  .choices .container {
+    width: 80%;
+    max-width: 250px;
+  }
+  
+  .icon #icon {
+    width: 150px;
+    height: 150px;
+  }
+  
+  .icon #text {
+    font-size: 1.5rem;
+  }
+  
+  input[type="checkbox"] {
+    margin: 0 10px;
+  }
+  
+  .submit {
+    width: 80%;
+    max-width: 240px;
+  }
 }
