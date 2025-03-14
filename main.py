@@ -1,79 +1,19 @@
 from fastapi import FastAPI, UploadFile, File, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.routing import APIRouter
 from pydantic import BaseModel
 import tensorflow as tf
 import numpy as np
+import joblib as jb
 import json
 import io
 from PIL import Image
 from typing import List
 import logging
 import os
-<<<<<<< HEAD
-from fastapi.responses import JSONResponse
-import joblib as jb  # ✅ Use this format
-import joblib
-
-# Define paths
-original_model_path = "Model/limit-input/model/output/breast_cancer_model.pkl"
-fixed_model_path = "Model/limit-input/model/output/breast_cancer_model_fixed.pkl"
-
-try:
-    # Load the original model file
-    model_tuple = joblib.load(original_model_path)
-    print(f"✅ Model loaded successfully: {type(model_tuple)}")
-
-    # Check if it's a tuple and extract the actual ML model
-    if isinstance(model_tuple, tuple):
-        print("🚨 Model is a tuple, extracting the correct ML model...")
-        actual_model = model_tuple[0]  # First element is the actual model
-
-        # Ensure the directory exists before saving
-        os.makedirs(os.path.dirname(fixed_model_path), exist_ok=True)
-
-        # Save only the actual ML model
-        joblib.dump(actual_model, fixed_model_path)
-        print(f"✅ Fixed model saved successfully at: {fixed_model_path}")
-
-    else:
-        print("✅ Model is already a valid ML model, no extraction needed.")
-
-except Exception as e:
-    print(f"❌ Error: {e}")
-
-# Load the incorrect model (tuple)
-model_tuple = joblib.load("Model/limit-input/model/output/breast_cancer_model.pkl")
-
-# Extract the actual model (RandomForestClassifier)
-actual_model = model_tuple[0]  # First element of the tuple is the ML model
-
-# Save only the model back
-fixed_model_path = "Model/limit-input/model/output/breast_cancer_model_fixed.pkl"
-joblib.dump(actual_model, fixed_model_path)
-
-print(f"✅ Fixed model saved successfully at: {fixed_model_path}")
-=======
 import pickle
 import pandas as pd
 from sklearn.preprocessing import LabelEncoder, StandardScaler
->>>>>>> 375f4024de710eb5ff90850fd7fb4732b6790cab
 
 app = FastAPI()
-# ✅ Fix: Enable CORS Middleware (Allow OPTIONS for preflight)
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],  # Allow all origins
-    allow_credentials=True,
-    allow_methods=["*"],  # ✅ Allow ALL HTTP methods, including OPTIONS
-    allow_headers=["*"],  # Allow all headers
-)
-
-# ✅ Fix: Explicitly Handle OPTIONS Request for /predict/
-@app.options("/predict/")
-async def options_predict():
-    return JSONResponse(content={"message": "OK"}, status_code=200)
-
 
 # Initialize Logger
 logging.basicConfig(level=logging.INFO)
@@ -94,58 +34,20 @@ def load_med_data_model():
     except Exception as e:
         logger.error(f"[ERROR] Failed to load breast cancer model: {e}")
         text_model, scalar, feature_names = None, None, None
-<<<<<<< HEAD
-        
-=======
 
 
->>>>>>> 375f4024de710eb5ff90850fd7fb4732b6790cab
 def load_limit_model():
     global limit_model, label_encoders, scaler_limit, y_encoder
     try:
-<<<<<<< HEAD
-        limit_model = jb.load("Model/limit-input/model/output/breast_cancer_model_fixed.pkl")
-        logger.info(f"[INFO] Limit model loaded successfully: {type(limit_model).__name__}")
-=======
         with open("Model/limit-input/output/limit_input_model.pkl", "rb") as f:
             limit_model, label_encoders, scaler_limit, y_encoder = pickle.load(f)
         logger.info(f"[INFO] Limit model type: {type(limit_model).__name__}")
         logger.info(f"[INFO] Label encoders: {label_encoders}") # add this
         logger.info(f"[INFO] Scaler limit: {scaler_limit}") # add this
         logger.info(f"[INFO] Y encoder: {y_encoder}") #add this
->>>>>>> 375f4024de710eb5ff90850fd7fb4732b6790cab
     except Exception as e:
         logger.error(f"[ERROR] Failed to load limit model: {e}")
         limit_model, label_encoders, scaler_limit, y_encoder = None, None, None, None
-
-
-   
-
-# Load Models
-def load_models():
-    global limit_model, text_model, scalar
-    try:
-        model = jb.load('Model/limit-input/model/output/breast_cancer_model.pkl')
-        
-        # ✅ Automatically extract correct model if it's a tuple
-        if isinstance(model, tuple):
-            logger.warning("[WARNING] Model is a tuple, extracting actual model...")
-            limit_model = model[0]  # Extract actual ML model
-        else:
-            limit_model = model  # Use as-is
-        
-        logger.info(f"[INFO] Limit model loaded successfully: {type(limit_model).__name__}")
-    except Exception as e:
-        logger.error(f"[ERROR] Failed to load limit model: {e}")
-        limit_model = None
-
-    try:
-        text_model = jb.load('Model/Models/breast_cancer/breast_cancer_model.pkl')
-        scalar = jb.load('Model/Models/breast_cancer/scaler_breast_cancer_model.pkl')
-        logger.info("[INFO] Breast cancer model and scaler loaded successfully.")
-    except Exception as e:
-        logger.error(f"[ERROR] Failed to load breast cancer model: {e}")
-        text_model, scalar = None, None
 
 
 def load_image_model():
@@ -214,54 +116,10 @@ class LimitModelInput(BaseModel):
     Breast_Quad: str
     Irradiat: str
 
-
-
+# Unified Prediction Endpoint
 @app.post("/predict/")
 async def predict(input_data: dict):
     try:
-<<<<<<< HEAD
-        if "age" in input_data and "symptoms" in input_data:
-            age = float(input_data["age"])  # Keep age as a number
-            symptoms = [float(s) for s in input_data["symptoms"]]
-
-            expected_symptoms = 8  # Now we expect 10 symptoms
-            if not limit_model:
-                raise HTTPException(status_code=503, detail="Limit model not loaded.")
-            if len(symptoms) != expected_symptoms:
-                raise HTTPException(status_code=400, detail=f"Limit model expects {expected_symptoms} symptoms, but got {len(symptoms)}.")
-
-            # ✅ Prepare input for prediction (age is separate, symptoms follow)
-            input_array = [age] + symptoms
-            logger.info(f"[INFO] Model input (Age + Symptoms): {input_array}")
-
-            try:
-                data = np.array(input_array).reshape(1, -1)
-                logger.info(f"[INFO] Reshaped Data for Prediction: {data.shape}")
-
-                if hasattr(limit_model, 'predict_proba'):
-                    proba = limit_model.predict_proba(data)
-                    prediction = float(proba[0][1]) if proba.shape[1] >= 2 else float(proba[0][0])
-                elif hasattr(limit_model, 'predict'):
-                    pred = limit_model.predict(data)
-                    prediction = float(pred[0]) if isinstance(pred, np.ndarray) else float(pred)
-                else:
-                    prediction = 0.5
-                    logger.warning("[WARNING] Unknown model type, using default prediction value.")
-            except Exception as model_error:
-                logger.error(f"[ERROR] Model prediction failed: {model_error}")
-                prediction = 0.5
-
-            prediction = max(0.0, min(1.0, prediction))
-            result = "High Risk" if prediction > 0.5 else "Low Risk"
-
-            return {
-                "model": "Limit Model",
-                "diagnosis": result,
-                "confidence": f"{prediction * 100:.2f}%",
-                "raw_prediction": prediction
-            }
-
-=======
         if all(key in input_data for key in ["Age", "Menopause", "Tumor_Size", "Inv_Nodes", "Node_Caps", "Deg_Malig", "Breast", "Breast_Quad", "Irradiat"]):
             # Handle underscores to hyphens conversion
             hyphen_keys = ["Tumor-Size", "Inv-Nodes", "Node-Caps", "Deg-Malig", "Breast-Quad"]
@@ -360,17 +218,12 @@ async def predict(input_data: dict):
                 "confidence": f"{float(prediction) * 100:.2f}%"
             }
 
->>>>>>> 375f4024de710eb5ff90850fd7fb4732b6790cab
         else:
             raise HTTPException(status_code=400, detail="Invalid input format.")
+
     except Exception as e:
         logger.error(f"[ERROR] Prediction failed: {e}")
         raise HTTPException(status_code=500, detail=f"Prediction error: {str(e)}")
-<<<<<<< HEAD
-
-
-
-=======
 # Image Prediction Endpoint
 
 @app.post("/predict-image/")
@@ -400,7 +253,6 @@ async def predict_image(file: UploadFile = File(...)):
         logger.error(f"[ERROR] Image prediction failed: {e}")
         raise HTTPException(status_code=500, detail=f"Image processing error: {str(e)}")
     
->>>>>>> 375f4024de710eb5ff90850fd7fb4732b6790cab
 # Health Tips Endpoint
 @app.get("/health-tips/")
 def get_health_tips():
@@ -435,8 +287,6 @@ async def debug_limit_model(input_data: dict):
     try:
         age = float(input_data.get("age", 45))
         symptoms = [float(s) for s in input_data.get("symptoms", [0.5] * 10)]
-        print("Received input data:", input_data)
-
         
         # Log model details
         model_info = {
@@ -468,7 +318,6 @@ async def debug_limit_model(input_data: dict):
         return results
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Debug error: {str(e)}")
-
 
 # Home Route
 @app.get("/")
