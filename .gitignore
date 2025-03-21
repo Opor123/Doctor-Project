@@ -6,3 +6,6 @@ Web_site/improved_version
 __pycache__
 .idea
 catboost_info
+Web_site/Api/synthetic_test_image.jpg
+jupiter_notebook
+docker-compose.yml
